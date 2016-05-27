@@ -3,11 +3,11 @@ package ru.javawebinar.topjava.util;
 import ru.javawebinar.topjava.model.UserMeal;
 import ru.javawebinar.topjava.model.UserMealWithExceed;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * GKislin
@@ -29,7 +29,35 @@ public class UserMealsUtil {
     }
 
     public static List<UserMealWithExceed>  getFilteredMealsWithExceeded(List<UserMeal> mealList, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        // TODO return filtered list with correctly exceeded field
-        return null;
+        List<UserMealWithExceed> filteredList = new ArrayList<>();
+        Map<String, Integer> caloriesThatDay = new HashMap<>();
+
+        for (UserMeal userMeal : mealList) {
+            String currentKey = Integer.valueOf(userMeal.getDateTime().getYear()).toString() +
+                    ":" + Integer.valueOf(userMeal.getDateTime().getDayOfYear()).toString();
+
+            if ( caloriesThatDay.containsKey(currentKey) )
+                caloriesThatDay.put( currentKey, caloriesThatDay.get(currentKey)+userMeal.getCalories() );
+            else
+                caloriesThatDay.put( currentKey, userMeal.getCalories() );
+
+        }
+
+
+        for (UserMeal userMeal : mealList) {
+            if ( TimeUtil.isBetween(userMeal.getDateTime().toLocalTime(), startTime, endTime) ) {
+                String currentKey = Integer.valueOf(userMeal.getDateTime().getYear()).toString() +
+                        ":" + Integer.valueOf(userMeal.getDateTime().getDayOfYear()).toString();
+
+                boolean exceed = false;
+                if (caloriesThatDay.get(currentKey) > caloriesPerDay) {
+                    exceed = true;
+                }
+
+                filteredList.add( new UserMealWithExceed(userMeal.getDateTime(),
+                        userMeal.getDescription(), userMeal.getCalories(), exceed) );
+            }
+        }
+        return filteredList;
     }
 }
