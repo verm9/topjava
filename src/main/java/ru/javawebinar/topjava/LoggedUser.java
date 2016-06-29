@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava;
 
+import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.util.UserMealsUtil;
 
 /**
@@ -10,6 +11,10 @@ public class LoggedUser {
 
     public static int id() {
         return 1;
+    }
+
+    public static User getUser() {
+        return new User();
     }
 
     public static int getCaloriesPerDay() {

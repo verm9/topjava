@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
         ExceptionUtil.checkNotFoundWithId(repository.delete(id), id);
     }
 
-    public User get(int id) throws NotFoundException {
+    public User get(int id){
         return ExceptionUtil.checkNotFoundWithId(repository.get(id), id);
     }
 
