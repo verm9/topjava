@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.javawebinar.topjava.UserTestData;
+import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
@@ -22,7 +23,7 @@ import static ru.javawebinar.topjava.UserTestData.USER;
  * GKislin
  * 13.03.2015.
  */
-@ContextConfiguration("classpath:spring/spring-app.xml")
+@ContextConfiguration({ "classpath:spring/spring-db.xml", "classpath:spring/spring-app.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
 public class InMemoryAdminRestControllerSpringTest {
 
@@ -35,16 +36,16 @@ public class InMemoryAdminRestControllerSpringTest {
     @Before
     public void setUp() throws Exception {
         repository.getAll().forEach(u -> repository.delete(u.getId()));
-        repository.save(USER);
-        repository.save(ADMIN);
+        repository.save(new User(null, "User", "user@yandex.ru", "password", Role.ROLE_USER));
+        repository.save(new User(null, "Admin", "admin@gmail.com", "admin", Role.ROLE_ADMIN));
     }
 
     @Test
     public void testDelete() throws Exception {
-        controller.delete(UserTestData.USER_ID);
+        int userId = controller.getAll().get(0).getId();
+        controller.delete(userId);
         Collection<User> users = controller.getAll();
-        Assert.assertEquals(users.size(), 1);
-        Assert.assertEquals(users.iterator().next(), ADMIN);
+        Assert.assertEquals(1, users.size());
     }
 
     @Test(expected = NotFoundException.class)
