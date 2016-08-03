@@ -1,22 +1,36 @@
 package ru.javawebinar.topjava.model;
 
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
  * GKislin
  * 11.01.2015.
  */
+@NamedQueries({
+        @NamedQuery(name = UserMeal.DELETE, query = "DELETE FROM UserMeal u WHERE u.id=:id"),
+        @NamedQuery(name = UserMeal.OF_CURRENT_USER, query = "SELECT u FROM UserMeal u WHERE u.user.id=:userId AND u.id=:id"),
+        @NamedQuery(name = UserMeal.GET_ALL, query = "SELECT u FROM UserMeal u WHERE u.user.id=:userId"),
+})
+@Entity
+@Table(name="meals")
 public class UserMeal extends BaseEntity {
 
+    public static final String DELETE = "UserMeal.delete";
+    public static final String OF_CURRENT_USER = "UserMeal.ofCurrentUser";
+    public static final String GET_ALL = "UserMeal.getAll";
+
+    @Column(name = "datetime", nullable = false)
     private LocalDateTime dateTime;
 
+    @Column(name = "description", nullable = false)
     private String description;
 
+    @Column(name = "calories", nullable = false)
     protected int calories;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
     public UserMeal() {
