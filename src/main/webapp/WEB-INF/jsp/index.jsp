@@ -3,7 +3,9 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <html>
-<jsp:include page="fragments/headTag.jsp"/>
+<jsp:include page="fragments/headTag.jsp">
+    <jsp:param name="title" value="app.title" />
+</jsp:include>
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <section>

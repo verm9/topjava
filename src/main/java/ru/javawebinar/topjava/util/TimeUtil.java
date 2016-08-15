@@ -16,6 +16,8 @@ public class TimeUtil {
 
     public static final LocalDate MIN_DATE = LocalDate.of(1, 1, 1);
     public static final LocalDate MAX_DATE = LocalDate.of(3000, 1, 1);
+    public static final LocalTime MIN = LocalTime.of(0, 0, 0);
+    public static final LocalTime MAX = LocalTime.of(23, 59, 59);
 
     private TimeUtil() {
     }
@@ -32,7 +34,15 @@ public class TimeUtil {
         return StringUtils.isEmpty(str) ? null : LocalDate.parse(str);
     }
 
+    public static LocalDate parseLocalDate(String str, LocalDate default_) {
+        return StringUtils.isEmpty(str) ? default_ : LocalDate.parse(str);
+    }
+
     public static LocalTime parseLocalTime(String str) {
         return StringUtils.isEmpty(str) ? null : LocalTime.parse(str);
+    }
+
+    public static LocalTime parseLocalTime(String str, LocalTime default_) {
+        return StringUtils.isEmpty(str) ? default_ : LocalTime.parse(str);
     }
 }

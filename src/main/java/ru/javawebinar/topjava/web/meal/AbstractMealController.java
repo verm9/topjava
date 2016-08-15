@@ -16,15 +16,15 @@ import java.time.LocalTime;
 import java.util.List;
 
 /**
- * GKislin
- * 06.03.2015.
+ * Created by nonu on 8/15/2016.
  */
 @Controller
-public class UserMealRestController {
-    private static final Logger LOG = LoggerFactory.getLogger(UserMealRestController.class);
+public class AbstractMealController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RestMealController.class);
 
     @Autowired
-    private UserMealService service;
+    protected UserMealService service;
 
     public UserMeal get(int id) {
         int userId = AuthorizedUser.id();
@@ -44,8 +44,7 @@ public class UserMealRestController {
         return UserMealsUtil.getWithExceeded(service.getAll(userId), AuthorizedUser.getCaloriesPerDay());
     }
 
-    public void update(UserMeal meal, int id) {
-        meal.setId(id);
+    public void update(UserMeal meal) {
         int userId = AuthorizedUser.id();
         LOG.info("update {} for User {}", meal, userId);
         service.update(meal, userId);
@@ -65,7 +64,7 @@ public class UserMealRestController {
         return UserMealsUtil.getFilteredWithExceeded(
                 service.getBetweenDates(
                         startDate != null ? startDate : TimeUtil.MIN_DATE, endDate != null ? endDate : TimeUtil.MAX_DATE, userId),
-                        startTime != null ? startTime : LocalTime.MIN, endTime != null ? endTime : LocalTime.MAX, AuthorizedUser.getCaloriesPerDay()
+                startTime != null ? startTime : LocalTime.MIN, endTime != null ? endTime : LocalTime.MAX, AuthorizedUser.getCaloriesPerDay()
         );
     }
 }
