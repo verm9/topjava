@@ -1,4 +1,3 @@
-<%@ page import="ru.javawebinar.topjava.util.TimeUtil" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -48,7 +47,7 @@
                         </div>
                     </div>
                 </form>
-                <a class="btn btn-sm btn-info" onclick="add()"><fmt:message key="meals.add"/></a>
+                <a class="btn btn-sm btn-info" onclick="addMeal()"><fmt:message key="meals.add"/></a>
                 <table class="table table-striped display" id="datatable">
                     <thead>
                     <tr>
@@ -59,20 +58,6 @@
                         <th></th>
                     </tr>
                     </thead>
-                    <c:forEach items="${mealList}" var="meal">
-                        <jsp:useBean id="meal" scope="page" type="ru.javawebinar.topjava.to.UserMealWithExceed"/>
-                        <tr class="${meal.exceed ? 'exceeded' : 'normal'}">
-                            <td>
-                                    <%--<fmt:parseDate value="${meal.dateTime}" pattern="y-M-dd'T'H:m" var="parsedDate"/>--%>
-                                    <%--<fmt:formatDate value="${parsedDate}" pattern="yyyy.MM.dd HH:mm" />--%>
-                                <%=TimeUtil.toString(meal.getDateTime())%>
-                            </td>
-                            <td>${meal.description}</td>
-                            <td>${meal.calories}</td>
-                            <td><a class="btn btn-xs btn-primary">Edit</a></td>
-                            <td><a class="btn btn-xs btn-danger" onclick="deleteRow(${meal.id})">Delete</a></td>
-                        </tr>
-                    </c:forEach>
                 </table>
             </div>
         </div>
@@ -85,7 +70,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h2 class="modal-title"><fmt:message key="meals.edit"/></h2>
+                <h2 class="modal-title"></h2>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" method="post" id="detailsForm">
@@ -161,12 +146,14 @@
                             "data": "calories"
                         },
                         {
-                            "defaultContent": "Edit",
-                            "orderable": false
+                            "orderable": false,
+                            "defaultContent": "",
+                            "render": renderEditBtn
                         },
                         {
-                            "defaultContent": "Delete",
-                            "orderable": false
+                            "orderable": false,
+                            "defaultContent": "",
+                            "render": renderDeleteBtn
                         }
                     ],
                     "order": [
@@ -174,7 +161,14 @@
                             0,
                             "desc"
                         ]
-                    ]
+                    ],
+                    "createdRow": function (row, data, dataIndex) {
+                        if (data.exceed) {
+                            $(row).addClass("exceeded");
+                        } else {
+                            $(row).addClass("normal");
+                        }
+                    }
                 });
 
         $('#filter').submit(function () {
@@ -182,6 +176,41 @@
             return false;
         });
         makeEditable();
+        updateTable();
     });
+
+    function renderEditBtn(data, type, row) {
+        if (type == 'display') {
+            return '<a class="btn btn-xs btn-primary" onclick="updateMealRow(' + row.id + ');">Edit</a>';
+        }
+        return data;
+    }
+
+    function renderDeleteBtn(data, type, row) {
+        if (type == 'display') {
+            return '<a class="btn btn-xs btn-danger" onclick="deleteRow(' + row.id + ');">Delete</a>';
+        }
+        return data;
+    }
+
+    var modalAddTitle = "<fmt:message key="meals.add"/>";
+    var modalEditTitle = "<fmt:message key="meals.edit"/>";
+
+    function addMeal() {
+        form.find(":input").val("");
+        $('#id').val(null);
+        $('.modal-title').html(modalAddTitle);
+        $('#editRow').modal();
+    }
+
+    function updateMealRow(id) {
+        $.get(ajaxUrl + id, function (data) {
+            $.each(data, function (key, value) {
+                form.find("input[name='" + key + "']").val(value);
+            });
+            $('.modal-title').html(modalEditTitle);
+            $('#editRow').modal();
+        });
+    }
 </script>
 </html>
